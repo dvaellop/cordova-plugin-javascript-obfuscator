@@ -10,9 +10,14 @@ module.exports = function(context) {
 
     var deferral = new Q.defer();
     var projectRoot = cordova_util.cdProjectRoot();
+
     var targetFiles = loadObfuscatedFileTargets();
 
-    context.opts.platforms.forEach(function(platform) {
+    context.opts.platforms.filter(function(platform) {
+        var pluginInfo = context.opts.plugin.pluginInfo;
+        return pluginInfo.getPlatformsArray().indexOf(platform) > -1;
+        
+    }).forEach(function(platform) {
         var platformPath = path.join(projectRoot, 'platforms', platform);
         var platformApi = platforms.getPlatformApi(platform, platformPath);
         var platformInfo = platformApi.getPlatformInfo();
@@ -59,7 +64,7 @@ module.exports = function(context) {
         var exclude = [];
 
         var doc = xmlHelpers.parseElementtreeSync(pluginXml);
-        var obfuscatedfiles = doc.findall('obfuscatedfiles');
+        var obfuscatedfiles = doc.findall('cryptfiles');
         if (obfuscatedfiles.length > 0) {
             obfuscatedfiles[0]._children.forEach(function(elm) {
                 elm._children.filter(function(celm) {

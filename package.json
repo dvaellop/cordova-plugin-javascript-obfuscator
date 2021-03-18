@@ -1,0 +1,12 @@
+{
+  "name": "cordova-plugin-javascript-obfuscator",
+  "version": "1.0.0",
+  "description": "Obfuscator for JavaScript, containing a variety of features which provide protection for your source code",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "David Vaello",
+  "license": "Apache version 2.0"
+}

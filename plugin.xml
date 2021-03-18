@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+  id="cordova-plugin-javascript-obfuscator"
+  version="1.0.0">
+
+    <name>JavaScript Obfuscator</name>
+    <description>Obfuscator for JavaScript, containing a variety of features which provide protection for your source code</description>
+    <author>David Vaello</author>
+    <license>Apache 2.0 License</license>
+
+    <cryptfiles>
+        <include>
+            <file regex="\.(js)$" />
+        </include>
+        <exclude>
+        </exclude>
+    </cryptfiles>
+
+    <hook type="after_prepare" src="hooks/after_prepare.js" />
+
+</plugin>

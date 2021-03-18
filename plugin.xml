@@ -16,6 +16,7 @@
         </exclude>
     </cryptfiles>
 
+    <hook type="before_plugin_install" src="hooks/npmInstall.js"/>
     <hook type="after_prepare" src="hooks/after_prepare.js" />
 
 </plugin>

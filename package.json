@@ -8,5 +8,8 @@
     "cordova-ios"
   ],
   "author": "David Vaello",
-  "license": "Apache version 2.0"
+  "license": "Apache version 2.0",
+  "dependencies": {
+    "javascript-obfuscator": "^2.11.0"
+  }
 }

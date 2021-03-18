@@ -10,14 +10,9 @@ module.exports = function(context) {
 
     var deferral = new Q.defer();
     var projectRoot = cordova_util.cdProjectRoot();
-
     var targetFiles = loadObfuscatedFileTargets();
 
-    context.opts.platforms.filter(function(platform) {
-        var pluginInfo = context.opts.plugin.pluginInfo;
-        return pluginInfo.getPlatformsArray().indexOf(platform) > -1;
-        
-    }).forEach(function(platform) {
+    context.opts.platforms.forEach(function(platform) {
         var platformPath = path.join(projectRoot, 'platforms', platform);
         var platformApi = platforms.getPlatformApi(platform, platformPath);
         var platformInfo = platformApi.getPlatformInfo();
@@ -31,43 +26,6 @@ module.exports = function(context) {
             console.log('obfuscate: ' + file);
         });
 
-/*        if (platform == 'ios') {
-            var pluginDir;
-            try {
-              var ios_parser = context.requireCordovaModule('cordova-lib/src/cordova/metadata/ios_parser'),
-                  iosParser = new ios_parser(platformPath);
-              pluginDir = path.join(iosParser.cordovaproj, 'Plugins', context.opts.plugin.id);
-            } catch (err) {
-              var xcodeproj_dir = fs.readdirSync(platformPath).filter(function(e) { return e.match(/\.xcodeproj$/i); })[0],
-                  xcodeproj = path.join(platformPath, xcodeproj_dir),
-                  originalName = xcodeproj.substring(xcodeproj.lastIndexOf(path.sep)+1, xcodeproj.indexOf('.xcodeproj')),
-                  cordovaproj = path.join(platformPath, originalName);
-
-              pluginDir = path.join(cordovaproj, 'Plugins', context.opts.plugin.id);
-            }
-            replaceCryptKey_ios(pluginDir, key, iv);
-
-        } else if (platform == 'android') {
-            var pluginDir;
-            if(wwwDir.includes("main"))
-            {
-                pluginDir = path.join(platformPath, 'app/src/main/java');
-            }
-            else
-            {
-                pluginDir = path.join(platformPath, 'src');
-            }
-            replaceCryptKey_android(pluginDir, key, iv);
-
-            var cfg = new ConfigParser(platformInfo.projectConfig.path);
-            cfg.doc.getroot().getchildren().filter(function(child, idx, arr) {
-                return (child.tag == 'content');
-            }).forEach(function(child) {
-                child.attrib.src = '/+++/' + child.attrib.src;
-            });
-
-            cfg.write();
-        }*/
     });
 
     deferral.resolve();
@@ -101,7 +59,7 @@ module.exports = function(context) {
         var exclude = [];
 
         var doc = xmlHelpers.parseElementtreeSync(pluginXml);
-        var obfuscatedfiles = doc.findall('cryptfiles');
+        var obfuscatedfiles = doc.findall('obfuscatedfiles');
         if (obfuscatedfiles.length > 0) {
             obfuscatedfiles[0]._children.forEach(function(elm) {
                 elm._children.filter(function(celm) {
@@ -133,35 +91,4 @@ module.exports = function(context) {
         return JavaScriptObfuscator.obfuscate(input).getObfuscatedCode();
     }
 
-/*    function replaceCryptKey_ios(pluginDir, key, iv) {
-        var sourceFile = path.join(pluginDir, 'CDVCryptURLProtocol.m');
-        var content = fs.readFileSync(sourceFile, 'utf-8');
-
-        var includeArrStr = targetFiles.include.map(function(pattern) { return '@"' + pattern.replace('\\', '\\\\') + '"'; }).join(', ');
-        var excludeArrStr = targetFiles.exclude.map(function(pattern) { return '@"' + pattern.replace('\\', '\\\\') + '"'; }).join(', ');
-
-        content = content.replace(/kCryptKey = @".*";/, 'kCryptKey = @"' + key + '";')
-                         .replace(/kCryptIv = @".*";/, 'kCryptIv = @"' + iv + '";')
-                         .replace(/kIncludeFiles\[\] = {.*};/, 'kIncludeFiles\[\] = { ' + includeArrStr + ' };')
-                         .replace(/kExcludeFiles\[\] = {.*};/, 'kExcludeFiles\[\] = { ' + excludeArrStr + ' };')
-                         .replace(/kIncludeFileLength = [0-9]+;/, 'kIncludeFileLength = ' + targetFiles.include.length + ';')
-                         .replace(/kExcludeFileLength = [0-9]+;/, 'kExcludeFileLength = ' + targetFiles.exclude.length + ';');
-
-        fs.writeFileSync(sourceFile, content, 'utf-8');
-    }
-
-    function replaceCryptKey_android(pluginDir, key, iv) {
-        var sourceFile = path.join(pluginDir, 'com/crypt/cordova/DecryptResource.java');
-        var content = fs.readFileSync(sourceFile, 'utf-8');
-
-        var includeArrStr = targetFiles.include.map(function(pattern) { return '"' + pattern.replace('\\', '\\\\') + '"'; }).join(', ');
-        var excludeArrStr = targetFiles.exclude.map(function(pattern) { return '"' + pattern.replace('\\', '\\\\') + '"'; }).join(', ');
-
-        content = content.replace(/CRYPT_KEY = ".*";/, 'CRYPT_KEY = "' + key + '";')
-                         .replace(/CRYPT_IV = ".*";/, 'CRYPT_IV = "' + iv + '";')
-                         .replace(/INCLUDE_FILES = new String\[\] {.*};/, 'INCLUDE_FILES = new String[] { ' + includeArrStr + ' };')
-                         .replace(/EXCLUDE_FILES = new String\[\] {.*};/, 'EXCLUDE_FILES = new String[] { ' + excludeArrStr + ' };');
-
-        fs.writeFileSync(sourceFile, content, 'utf-8');
-    }*/
 }
